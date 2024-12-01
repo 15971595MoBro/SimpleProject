@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SimpleProject.Models;
 using SimpleProject.Services.Implementations;
 using SimpleProject.Services.Interfaces;
+using SimpleProject.ViewModels;
 
 namespace SimpleProject.Controllers
 {
@@ -11,11 +13,13 @@ namespace SimpleProject.Controllers
         private readonly IProductService _productService;
         private readonly IFileService _fileService;
         private readonly ICategoryService _categoryService;
-        public ProductController(IProductService productService, IFileService fileService , ICategoryService categoryService)
+        private readonly IMapper _mapper;
+        public ProductController(IProductService productService, IFileService fileService , ICategoryService categoryService, IMapper mapper)
         {
             _productService = productService;
             _fileService = fileService;
             _categoryService = categoryService;
+            _mapper = mapper;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -34,23 +38,21 @@ namespace SimpleProject.Controllers
            return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Product model)
+        public async Task<IActionResult> Create(AddProductViewModel model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var path = "";
-                    if (model.File?.Length > 0) {
+                    var product = _mapper.Map<Product>(model);
+                    //var product = new Product()
+                    //{
+                    //    Name = model.Name,
+                    //    Price = model.Price,
+                    //    CategoryId = model.CategoryId,
+                    //};
 
-                        path = await _fileService.Upload(model.File, "/images/");
-                        if (path == "Problem")
-                        {
-                            return BadRequest();
-                        }
-                    }
-                    model.Path = path;
-                    var result = await _productService.AddProduct(model);
+                    var result = await _productService.AddProduct(product, model.Files);
                     if (result != "Success")
                     {
                         ModelState.AddModelError(string.Empty, result);
@@ -87,21 +89,21 @@ namespace SimpleProject.Controllers
                     var product = await _productService.GetProductById(id);
                     if (product == null) return NotFound();
 
-                    var path = model.Path;
-                    if (model.File?.Length > 0)
-                    {
-                        // Delete Old Physical File
-                        _fileService.DeletePhysicalFile(path);
-                        //upload new image
-                        path = await _fileService.Upload(model.File, "/images/");
-                        if (path == "Problem")
-                        {
-                            return BadRequest();
-                        }
-                    }
+                    //var path = model.Path;
+                    //if (model.File?.Length > 0)
+                    //{
+                    //    // Delete Old Physical File
+                    //    _fileService.DeletePhysicalFile(path);
+                    //    //upload new image
+                    //    path = await _fileService.Upload(model.File, "/images/");
+                    //    if (path == "Problem")
+                    //    {
+                    //        return BadRequest();
+                    //    }
+                    //}
+                    //product.Path = path;
                     product.Name = model.Name;
                     product.Price = model.Price;
-                    product.Path = path;
                     //var product = _productService.GetProductById(model.Id);
                     //if (product == null) return NotFound();
                     var result = await _productService.UpdateProduct(product);

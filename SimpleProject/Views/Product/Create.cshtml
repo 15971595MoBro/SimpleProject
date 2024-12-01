@@ -1,4 +1,4 @@
-﻿@model Product
+﻿@model AddProductViewModel
 
 
 <div>
@@ -17,9 +17,9 @@
         </div>
 
         <div>
-            <label asp-for="File"></label>
-            <input type="file" asp-for="File" class="form-control"/>
-            <span asp-validation-for="File" class="text-danger"></span>
+            <label asp-for="Files"></label>
+            <input type="file" asp-for="Files" class="form-control" multiple/>
+            <span asp-validation-for="Files" class="text-danger"></span>
         </div>
 
         <div>

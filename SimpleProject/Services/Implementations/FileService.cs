@@ -13,37 +13,42 @@ namespace SimpleProject.Services.Implementations
         public bool DeletePhysicalFile(string path)
         {
             var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot" + path);
-            if (File.Exists(directoryPath)) { 
+            if (File.Exists(directoryPath))
+            {
                 File.Delete(directoryPath);
                 return true;
             }
             return false;
         }
 
-        public async Task<string> Upload(IFormFile file , string location)
+        public async Task<string> Upload(IFormFile file, string location)
         {
 
-                try
-                {
+            try
+            {
 
-                    var path = _webHostEnvironment.WebRootPath + location;
-                    var extension = Path.GetExtension(file.FileName);
-                    var filename = Guid.NewGuid().ToString().Replace("-", String.Empty) + extension;
-                    //Save
-                    if (!Directory.Exists(path)) { 
-                        Directory.CreateDirectory(path);
-                    }
-                    using (FileStream fileStream = File.Create(path + filename)) {
-                        await file.CopyToAsync(fileStream);
-                        fileStream.Flush();
-                        return $"{location}/{filename}";
-                    }
-                }
-                catch
+                var path = _webHostEnvironment.WebRootPath + location;
+                var extension = Path.GetExtension(file.FileName);
+                var filename = Guid.NewGuid().ToString().Replace("-", String.Empty) + extension;
+                //Save
+                if (!Directory.Exists(path))
                 {
-                    return "Problem";
+                    Directory.CreateDirectory(path);
                 }
-            
+                using (FileStream fileStream = File.Create(path + filename))
+                {
+                    await file.CopyToAsync(fileStream);
+                    fileStream.Flush();
+                    return $"{location}/{filename}";
+                }
+            }
+            catch (Exception ex)
+            {
+                {
+                    return ex.Message + "--" + ex.InnerException;
+                }
+
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SimpleProject.Data;
 using SimpleProject.Models;
 using System.Diagnostics;
 
@@ -6,17 +8,17 @@ namespace SimpleProject.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _applicationDbContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext applicationDbContext)
         {
-            _logger = logger;
+            _applicationDbContext = applicationDbContext;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            Product product = new Product() { Id = 1  , Name = "Mohamed"};
-            return View(product); 
+            var categories =await _applicationDbContext.Category.Include(x => x.Products.Take(5)).ToListAsync();
+            return View(categories); 
         }
 
         public IActionResult Privacy()

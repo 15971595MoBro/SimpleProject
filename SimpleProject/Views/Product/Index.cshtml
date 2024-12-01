@@ -12,8 +12,8 @@
                     <td>Id</td>
                     <td>Name</td>
                     <td>Price</td>
-                    <td>Image</td>
-                    <td>Details</td>
+@*                     <td>Image</td>
+ *@                    <td>Details</td>
                     <td>Edit</td>
                     <td>Delete</td>
                 </tr>
@@ -25,9 +25,9 @@
                         <td>@item.Id</td>
                         <td>@item.Name</td>
                         <td>@item.Price</td>
-                        <td>
+                       @*  <td>
                             <img src="@item.Path" alt="Image" height="50" width="50"/>
-                        </td>
+                        </td> *@
                         <td>
                             <a asp-action="Details" asp-controller="Product" asp-route-id="@item.Id" class="btn btn-info">Details</a>
                         </td>
